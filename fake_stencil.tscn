@@ -1,0 +1,97 @@
+[gd_scene load_steps=12 format=3 uid="uid://b11ktai8pfdtw"]
+
+[ext_resource type="ArrayMesh" uid="uid://cf8m10x3yfnq3" path="res://models.obj" id="1_l0gp2"]
+[ext_resource type="ArrayMesh" uid="uid://dfqsgowv1fbj" path="res://shadows.obj" id="2_g6nbj"]
+
+[sub_resource type="Environment" id="Environment_4j80m"]
+background_mode = 1
+ssil_radius = 4.43
+ssil_intensity = 2.14
+
+[sub_resource type="Shader" id="Shader_cm052"]
+code = "shader_type spatial;
+
+render_mode unshaded, cull_back, blend_add, depth_test_disabled;
+
+void fragment() {
+	ALPHA = 0.5;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_48rhi"]
+render_priority = 0
+shader = SubResource("Shader_cm052")
+
+[sub_resource type="Shader" id="Shader_trvv3"]
+code = "shader_type spatial;
+
+render_mode unshaded, cull_front, blend_sub, depth_test_disabled;
+
+void fragment() {
+	ALPHA = 0.5;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5x7nf"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_48rhi")
+shader = SubResource("Shader_trvv3")
+
+[sub_resource type="Shader" id="Shader_7y05t"]
+code = "shader_type spatial;
+
+render_mode unshaded, cull_back, blend_sub;
+
+void fragment() {
+	ALPHA = 0.5;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fuxda"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_5x7nf")
+shader = SubResource("Shader_7y05t")
+
+[sub_resource type="Shader" id="Shader_ibn0l"]
+code = "shader_type spatial;
+
+render_mode unshaded, cull_front, blend_add;
+
+void fragment() {
+	ALPHA = 0.5;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0jelx"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_fuxda")
+shader = SubResource("Shader_ibn0l")
+
+[node name="FAKE_STENCIL" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.975611, -0.219506, 0, 0.219506, 0.975611, 0, 0, 0)
+sky_mode = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_4j80m")
+
+[node name="Models" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_l0gp2")
+
+[node name="GODOT_SHADOWS" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59802, 0.480583)
+visible = false
+light_energy = 1.5
+shadow_enabled = true
+shadow_blur = 0.0
+omni_range = 17.6523
+
+[node name="FAKE_SHADOWS" type="Node3D" parent="."]
+
+[node name="Shadows" type="MeshInstance3D" parent="FAKE_SHADOWS"]
+material_override = SubResource("ShaderMaterial_0jelx")
+mesh = ExtResource("2_g6nbj")
+skeleton = NodePath("../..")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="FAKE_SHADOWS"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59802, 0.480583)
+light_energy = 1.5
+shadow_blur = 0.0
+omni_range = 17.6523
