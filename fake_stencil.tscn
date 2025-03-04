@@ -1,67 +1,46 @@
-[gd_scene load_steps=12 format=3 uid="uid://b11ktai8pfdtw"]
+[gd_scene load_steps=13 format=3 uid="uid://b11ktai8pfdtw"]
 
 [ext_resource type="ArrayMesh" uid="uid://cf8m10x3yfnq3" path="res://models.obj" id="1_l0gp2"]
-[ext_resource type="ArrayMesh" uid="uid://dfqsgowv1fbj" path="res://shadows.obj" id="2_g6nbj"]
+[ext_resource type="Shader" path="res://pass_3.gdshader" id="2_7mocq"]
+[ext_resource type="Shader" path="res://pass_2.gdshader" id="3_joujc"]
+[ext_resource type="ArrayMesh" uid="uid://dsufpv6tfg6xf" path="res://cube.obj" id="3_xhs6u"]
+[ext_resource type="Shader" path="res://pass_1.gdshader" id="4_1iuh3"]
+[ext_resource type="Shader" path="res://pass_0.gdshader" id="5_3vuqc"]
 
 [sub_resource type="Environment" id="Environment_4j80m"]
 background_mode = 1
 ssil_radius = 4.43
 ssil_intensity = 2.14
 
-[sub_resource type="Shader" id="Shader_cm052"]
-code = "shader_type spatial;
-
-render_mode unshaded, cull_back, blend_add, depth_test_disabled;
-
-void fragment() {
-	ALPHA = 0.5;
-}"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_48rhi"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8vh71"]
 render_priority = 0
-shader = SubResource("Shader_cm052")
+shader = ExtResource("2_7mocq")
+shader_parameter/light_position = Vector3(0, 2.59802, 0.480583)
+shader_parameter/light_radius = 50.0
 
-[sub_resource type="Shader" id="Shader_trvv3"]
-code = "shader_type spatial;
-
-render_mode unshaded, cull_front, blend_sub, depth_test_disabled;
-
-void fragment() {
-	ALPHA = 0.5;
-}"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5x7nf"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yrgy6"]
 render_priority = 0
-next_pass = SubResource("ShaderMaterial_48rhi")
-shader = SubResource("Shader_trvv3")
+next_pass = SubResource("ShaderMaterial_8vh71")
+shader = ExtResource("3_joujc")
+shader_parameter/light_position = Vector3(0, 2.59802, 0.480583)
+shader_parameter/light_radius = 50.0
 
-[sub_resource type="Shader" id="Shader_7y05t"]
-code = "shader_type spatial;
-
-render_mode unshaded, cull_back, blend_sub;
-
-void fragment() {
-	ALPHA = 0.5;
-}"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fuxda"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0ueyi"]
 render_priority = 0
-next_pass = SubResource("ShaderMaterial_5x7nf")
-shader = SubResource("Shader_7y05t")
+next_pass = SubResource("ShaderMaterial_yrgy6")
+shader = ExtResource("4_1iuh3")
+shader_parameter/light_position = Vector3(0, 2.59802, 0.480583)
+shader_parameter/light_radius = 50.0
 
-[sub_resource type="Shader" id="Shader_ibn0l"]
-code = "shader_type spatial;
-
-render_mode unshaded, cull_front, blend_add;
-
-void fragment() {
-	ALPHA = 0.5;
-}"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0jelx"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cyg04"]
 render_priority = 0
-next_pass = SubResource("ShaderMaterial_fuxda")
-shader = SubResource("Shader_ibn0l")
+next_pass = SubResource("ShaderMaterial_0ueyi")
+shader = ExtResource("5_3vuqc")
+shader_parameter/light_position = Vector3(0, 2.59802, 0.480583)
+shader_parameter/light_radius = 50.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_vordu"]
+size = Vector2(26.35, 23.13)
 
 [node name="FAKE_STENCIL" type="Node3D"]
 
@@ -72,8 +51,17 @@ sky_mode = 2
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_4j80m")
 
-[node name="Models" type="MeshInstance3D" parent="."]
+[node name="default_models" type="Node3D" parent="."]
+
+[node name="Models" type="MeshInstance3D" parent="default_models"]
 mesh = ExtResource("1_l0gp2")
+skeleton = NodePath("../..")
+
+[node name="shadows" type="MeshInstance3D" parent="default_models"]
+material_override = SubResource("ShaderMaterial_cyg04")
+extra_cull_margin = 16384.0
+mesh = ExtResource("1_l0gp2")
+skeleton = NodePath("../..")
 
 [node name="GODOT_SHADOWS" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59802, 0.480583)
@@ -83,15 +71,42 @@ shadow_enabled = true
 shadow_blur = 0.0
 omni_range = 17.6523
 
-[node name="FAKE_SHADOWS" type="Node3D" parent="."]
-
-[node name="Shadows" type="MeshInstance3D" parent="FAKE_SHADOWS"]
-material_override = SubResource("ShaderMaterial_0jelx")
-mesh = ExtResource("2_g6nbj")
-skeleton = NodePath("../..")
-
-[node name="OmniLight3D" type="OmniLight3D" parent="FAKE_SHADOWS"]
+[node name="LIGHT" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59802, 0.480583)
-light_energy = 1.5
+light_energy = 2.146
 shadow_blur = 0.0
 omni_range = 17.6523
+
+[node name="box_test" type="Node3D" parent="."]
+transform = Transform3D(0.832605, -0.282742, 0.476263, 0.270345, 0.957956, 0.0960903, -0.483409, 0.0487492, 0.874037, 3.80055, -0.100374, -3.28328)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="box_test"]
+transform = Transform3D(1, -2.98023e-08, -7.45058e-09, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("3_xhs6u")
+
+[node name="shadow" type="MeshInstance3D" parent="box_test"]
+material_override = SubResource("ShaderMaterial_cyg04")
+cast_shadow = 0
+extra_cull_margin = 16384.0
+custom_aabb = AABB(9.42, 8.63, 15.6, 0, 0, 0)
+ignore_occlusion_culling = true
+mesh = ExtResource("3_xhs6u")
+
+[node name="box_test2" type="Node3D" parent="."]
+transform = Transform3D(0.962748, -0.268407, -0.0327935, 0.270345, 0.957956, 0.0960903, 0.00562336, -0.101377, 0.994833, 3.78172, -0.295751, 3.61219)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="box_test2"]
+transform = Transform3D(1, -2.98023e-08, -7.45058e-09, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = ExtResource("3_xhs6u")
+
+[node name="shadow" type="MeshInstance3D" parent="box_test2"]
+material_override = SubResource("ShaderMaterial_cyg04")
+cast_shadow = 0
+extra_cull_margin = 16384.0
+custom_aabb = AABB(9.42, 8.63, 15.6, 0, 0, 0)
+ignore_occlusion_culling = true
+mesh = ExtResource("3_xhs6u")
+
+[node name="floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.39966, 0)
+mesh = SubResource("PlaneMesh_vordu")
