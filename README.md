@@ -1,9 +1,10 @@
 # Godot shadow volume without stencil buffer
-**It’s just a masking technique, there’s no volume generator.**
 
 Stencil-like shadows based on alpha blending (You can create shadow-volume without Stencil-buffer operations)
 
 This requires a complex material of 4 shaders.
+
+**This implementation includes a simple volume generator. It does not support flat-shaded models and non-closed geometry.**
 
 ## **Tested renderers:**
 
